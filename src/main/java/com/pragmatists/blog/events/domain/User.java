@@ -9,9 +9,10 @@ import javax.persistence.Entity;
 public class User {
 
     @EmbeddedId
+    public
     UserId id;
     String login;
-    String email;
+    public String email;
 
     private User() { }
 
