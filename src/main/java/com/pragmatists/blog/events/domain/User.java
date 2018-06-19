@@ -1,5 +1,6 @@
 package com.pragmatists.blog.events.domain;
 
+import com.pragmatists.blog.events.application.EmailToken;
 import com.pragmatists.blog.events.application.UserJson;
 
 import javax.persistence.EmbeddedId;
@@ -9,10 +10,10 @@ import javax.persistence.Entity;
 public class User {
 
     @EmbeddedId
-    public
-    UserId id;
-    String login;
+    public UserId id;
+    public String login;
     public String email;
+    public String emailToken;
 
     private User() { }
 
@@ -24,5 +25,9 @@ public class User {
 
     public UserJson asJson() {
         return new UserJson(id, login, email);
+    }
+
+    public void tokenSend(EmailToken emailToken) {
+        this.emailToken = emailToken.asString();
     }
 }

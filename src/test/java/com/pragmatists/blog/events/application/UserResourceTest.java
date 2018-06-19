@@ -1,8 +1,10 @@
 package com.pragmatists.blog.events.application;
 
+import com.google.common.base.Splitter;
 import com.pragmatists.blog.events.EventsApplication;
 import okhttp3.*;
 import org.apache.activemq.junit.EmbeddedActiveMQBroker;
+import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -16,8 +18,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sound.midi.Receiver;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.util.Lists.newArrayList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EventsApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -60,7 +65,10 @@ public class UserResourceTest {
 
         api.post("users", createUserJson.toString());
 
-        assertThat(jmsTemplate.receiveAndConvert("emails")).isEqualTo("dev-user@pragmatists.pl");
+        String message = (String) jmsTemplate.receiveAndConvert("emails");
+        List<String> emailAndToken = newArrayList(Splitter.on(";").split(message));
+        assertThat(emailAndToken.get(0)).isEqualTo("dev-user@pragmatists.pl");
+        assertThat(emailAndToken.get(1)).isNotEmpty();
     }
 
     private class ApiTemplate {
