@@ -2,7 +2,7 @@ package com.pragmatists.blog.events.application;
 
 import com.pragmatists.blog.events.domain.User;
 import com.pragmatists.blog.events.domain.UserCreated;
-import com.pragmatists.blog.events.infrastracture.UserRepository;
+import com.pragmatists.blog.events.domain.UserRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

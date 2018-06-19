@@ -4,13 +4,17 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class UserId implements Serializable {
-    UUID id;
+    String id;
+
+    public UserId(String id) {
+        this.id = id;
+    }
 
     public UserId() {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
     }
 
     public String asString() {
-        return id.toString();
+        return id;
     }
 }

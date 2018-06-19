@@ -27,7 +27,7 @@ public class User {
         return new UserJson(id, login, email);
     }
 
-    public void tokenSend(EmailToken emailToken) {
+    public void token(EmailToken emailToken) {
         this.emailToken = emailToken.asString();
     }
 }

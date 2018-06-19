@@ -6,6 +6,10 @@ public class EmailToken {
 
     private final String token;
 
+    public EmailToken(String token) {
+        this.token = token;
+    }
+
     public EmailToken() {
         token = UUID.randomUUID().toString();
     }

@@ -4,5 +4,5 @@ import com.pragmatists.blog.events.domain.User;
 import com.pragmatists.blog.events.domain.UserId;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository extends CrudRepository<User, UserId> {
+public interface JpaUserRepository extends CrudRepository<User, UserId> {
 }

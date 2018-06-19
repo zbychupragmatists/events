@@ -26,7 +26,7 @@ import static org.assertj.core.util.Lists.newArrayList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EventsApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserResourceTest {
+abstract public class UserResourceTest {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -60,14 +60,14 @@ public class UserResourceTest {
     @Test
     public void registerPutsEmailOnQueue() throws Exception {
         JSONObject createUserJson = new JSONObject()
-                .put("login", "dev-user")
-                .put("email", "dev-user@pragmatists.pl");
+                .put("login", "dev-user2")
+                .put("email", "dev-user2@pragmatists.pl");
 
         api.post("users", createUserJson.toString());
 
         String message = (String) jmsTemplate.receiveAndConvert("emails");
         List<String> emailAndToken = newArrayList(Splitter.on(";").split(message));
-        assertThat(emailAndToken.get(0)).isEqualTo("dev-user@pragmatists.pl");
+        assertThat(emailAndToken.get(0)).isEqualTo("dev-user2@pragmatists.pl");
         assertThat(emailAndToken.get(1)).isNotEmpty();
     }
 
