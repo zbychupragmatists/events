@@ -4,23 +4,20 @@ import com.google.common.base.Splitter;
 import com.pragmatists.blog.events.EventsApplication;
 import okhttp3.*;
 import org.apache.activemq.junit.EmbeddedActiveMQBroker;
-import org.assertj.core.util.Lists;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.sound.midi.Receiver;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.newArrayList;
 
@@ -54,11 +51,11 @@ abstract public class UserResourceTest {
         String response = api.post("users", createUserJson.toString());
 
         JSONObject jsonObject = new JSONObject(response);
-        assertThat(jsonObject.get("id")).isNotNull();
+        assertThat(jsonObject.getString("id")).isNotNull();
     }
 
     @Test
-    public void registerPutsEmailOnQueue() throws Exception {
+    public void registerPutsEmailAndTokenOnQueue() throws Exception {
         JSONObject createUserJson = new JSONObject()
                 .put("login", "dev-user2")
                 .put("email", "dev-user2@pragmatists.pl");
@@ -69,6 +66,25 @@ abstract public class UserResourceTest {
         List<String> emailAndToken = newArrayList(Splitter.on(";").split(message));
         assertThat(emailAndToken.get(0)).isEqualTo("dev-user2@pragmatists.pl");
         assertThat(emailAndToken.get(1)).isNotEmpty();
+    }
+
+    @Test
+    public void registeredUserHasTokenGenerated() throws Exception {
+        String userId = givenUserCreated("dev-user3", "dev-user3@pragmatists.pl");
+
+        String response = api.get(format("users/%s", userId));
+
+        JSONObject jsonObject = new JSONObject(response);
+        assertThat(jsonObject.getString("emailToken")).isNotNull();
+    }
+
+    private String givenUserCreated(String login, String email) throws JSONException, IOException {
+        JSONObject createUserJson = new JSONObject()
+                .put("login", login)
+                .put("email", email);
+        String response = api.post("users", createUserJson.toString());
+        JSONObject jsonObject = new JSONObject(response);
+        return jsonObject.getString("id");
     }
 
     private class ApiTemplate {
@@ -92,7 +108,16 @@ abstract public class UserResourceTest {
         }
 
         private String withBaseUrl(String url) {
-            return String.format("http://localhost:%s/%s", this.serverPort, url);
+            return format("http://localhost:%s/%s", this.serverPort, url);
+        }
+
+        public String get(String url) throws IOException {
+            Request request = new Request.Builder()
+                    .url(withBaseUrl(url))
+                    .get()
+                    .build();
+            Response response = this.client.newCall(request).execute();
+            return response.body().string();
         }
     }
 }
