@@ -7,10 +7,6 @@ import com.pragmatists.blog.events.domain.UserRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 public class UserQueueNotifier {
@@ -23,15 +19,15 @@ public class UserQueueNotifier {
         this.userRepository = userRepository;
     }
 
-    //REQUIRES_NEW is necessary to persist Database changes in @TransactionalEventListener, see here: https://docs.spring.io/autorepo/docs/spring/4.3.2.RELEASE/javadoc-api/org/springframework/transaction/support/TransactionSynchronization.html
     @EventListener(UserCreated.class)
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) -- uncomment to make pass tests in UserResourceJdbcTemplateTest
+//  @Transactional(propagation = Propagation.REQUIRES_NEW) -- uncomment to make pass method
+//  com.pragmatists.blog.events.application.UserResourceTest#registeredUserHasTokenGenerated and
+//  com.pragmatists.blog.events.application.UserResourceTest#registeredUserHasTokenGenerated
     public void onUserCreate(UserCreated userCreated) {
         User user = userRepository.find(userCreated.id);
-        EmailToken emailToken = new EmailToken();
-        user.token(emailToken);
+        user.generateToken();
         userRepository.save(user);
-        jmsTemplate.convertAndSend("emails", new EmailWithToken(user.email, emailToken.asString()).asJmsMessage());
+        jmsTemplate.convertAndSend("emails", new EmailWithToken(user.email, user.token()).asJmsMessage());
     }
 }

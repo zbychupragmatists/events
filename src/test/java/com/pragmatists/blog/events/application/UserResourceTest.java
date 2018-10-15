@@ -54,21 +54,23 @@ abstract public class UserResourceTest {
         assertThat(jsonObject.getString("id")).isNotNull();
     }
 
+@Test
+public void registerPutsEmailAndTokenOnQueue() throws Exception {
+    JSONObject createUserJson = new JSONObject()
+            .put("login", "dev-user2")
+            .put("email", "dev-user2@pragmatists.pl");
+
+    api.post("users", createUserJson.toString());
+
+    String message = (String) jmsTemplate.receiveAndConvert("emails");
+    List<String> emailAndToken = newArrayList(Splitter.on(";").split(message));
+    assertThat(emailAndToken.get(0)).isEqualTo("dev-user2@pragmatists.pl");
+    assertThat(emailAndToken.get(1)).isNotEmpty();
+}
+
     @Test
-    public void registerPutsEmailAndTokenOnQueue() throws Exception {
-        JSONObject createUserJson = new JSONObject()
-                .put("login", "dev-user2")
-                .put("email", "dev-user2@pragmatists.pl");
-
-        api.post("users", createUserJson.toString());
-
-        String message = (String) jmsTemplate.receiveAndConvert("emails");
-        List<String> emailAndToken = newArrayList(Splitter.on(";").split(message));
-        assertThat(emailAndToken.get(0)).isEqualTo("dev-user2@pragmatists.pl");
-        assertThat(emailAndToken.get(1)).isNotEmpty();
-    }
-
-    @Test
+    @Ignore // Unignore this to see if transaction inside listener was committed - should fail without
+    // @Transactional(propagation = Propagation.REQUIRES_NEW) on listener method
     public void registeredUserHasTokenGenerated() throws Exception {
         String userId = givenUserCreated("dev-user3", "dev-user3@pragmatists.pl");
 

@@ -30,4 +30,12 @@ public class User {
     public void token(EmailToken emailToken) {
         this.emailToken = emailToken.asString();
     }
+
+    public void generateToken() {
+        this.emailToken = new EmailToken().asString();
+    }
+
+    public String token() {
+        return this.emailToken;
+    }
 }
