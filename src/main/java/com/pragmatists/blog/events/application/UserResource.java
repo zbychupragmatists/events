@@ -22,6 +22,4 @@ public class UserResource {
         return savedUser.asJson();
     }
 
-//    public UserJson
-
 }
