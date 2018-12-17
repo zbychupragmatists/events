@@ -27,7 +27,7 @@ public class JdbcTemplateUserRepository implements UserRepository {
 
     @Override
     public User save(User user) {
-        return jpaUserRepository.save(user);
+        return jpaUserRepository.saveAndFlush(user);
     }
 
     private class UserRowMapper implements RowMapper<User> {
