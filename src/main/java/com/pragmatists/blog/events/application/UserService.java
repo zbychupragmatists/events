@@ -2,6 +2,7 @@ package com.pragmatists.blog.events.application;
 
 import com.pragmatists.blog.events.domain.User;
 import com.pragmatists.blog.events.domain.UserCreated;
+import com.pragmatists.blog.events.domain.UserId;
 import com.pragmatists.blog.events.domain.UserRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class UserService {
     public UserService(UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
+    }
+
+    public User getUser(UserId id) {
+        return userRepository.find(id);
     }
 
     public User createUser(User user) {

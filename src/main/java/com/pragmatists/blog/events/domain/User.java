@@ -24,7 +24,7 @@ public class User {
     }
 
     public UserJson asJson() {
-        return new UserJson(id, login, email);
+        return new UserJson(id, login, email, emailToken);
     }
 
     public void token(EmailToken emailToken) {

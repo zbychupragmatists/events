@@ -69,7 +69,7 @@ public void registerPutsEmailAndTokenOnQueue() throws Exception {
 }
 
     @Test
-    @Ignore // Unignore this to see if transaction inside listener was committed - should fail without
+    // @Ignore // Unignore this to see if transaction inside listener was committed - should fail without
     // @Transactional(propagation = Propagation.REQUIRES_NEW) on listener method
     public void registeredUserHasTokenGenerated() throws Exception {
         String userId = givenUserCreated("dev-user3", "dev-user3@pragmatists.pl");
