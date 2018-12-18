@@ -1,10 +1,8 @@
 package com.pragmatists.blog.events.application;
 
 import com.pragmatists.blog.events.domain.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.pragmatists.blog.events.domain.UserId;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -14,6 +12,11 @@ public class UserResource {
 
     public UserResource(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/{id}")
+    public UserJson getUser(@PathVariable("id") String id) {
+        return userService.getUser(new UserId(id)).asJson();
     }
 
     @PostMapping
