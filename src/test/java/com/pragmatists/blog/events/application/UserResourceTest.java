@@ -77,7 +77,7 @@ public void registerPutsEmailAndTokenOnQueue() throws Exception {
         String response = api.get(format("users/%s", userId));
 
         JSONObject jsonObject = new JSONObject(response);
-        assertThat(jsonObject.getString("emailToken")).isNotNull();
+        assertThat(jsonObject.getString("emailToken")).isNotEqualTo("null");
     }
 
     private String givenUserCreated(String login, String email) throws JSONException, IOException {
